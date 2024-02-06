@@ -1,3 +1,5 @@
+CsvReader/*.csv
+
 CsvReader/*.swp
 CsvReader/*.*~
 CsvReader/project.lock.json
