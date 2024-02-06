@@ -14,7 +14,6 @@ public class ProductsRepository : IProductsRepository
 {
     public async Task<bool> ImportProducts(SqlConnection connection, SqlTransaction? transaction)
     {
-        Console.WriteLine("Successfully downloaded products.");
         var products = GetProductsFromCsv();
 
         await using var cmd = connection.CreateCommand();
@@ -50,7 +49,7 @@ public class ProductsRepository : IProductsRepository
         return await connection.QueryFirstOrDefaultAsync<ProductInfo>(ProductsQueries.GetProductInfo, new { SKU = sku });
     }
 
-    public async Task<bool> DeleteNotValidProducts(SqlConnection connection, SqlTransaction transaction)
+    public async Task<bool> DeleteNotValidProducts(SqlConnection connection, SqlTransaction? transaction)
     {
         try
         {
@@ -66,7 +65,7 @@ public class ProductsRepository : IProductsRepository
 
     private static IEnumerable<Product> GetProductsFromCsv()
     {
-        var readerProducts = new StreamReader("Products.csv", Encoding.UTF8);
+        var readerProducts = new StreamReader(DownloadFilesPaths.ProductsSavingPath, Encoding.UTF8);
         var csvProducts = new CsvHelper.CsvReader(readerProducts, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,

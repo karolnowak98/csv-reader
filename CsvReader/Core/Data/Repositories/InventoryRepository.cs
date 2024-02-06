@@ -15,7 +15,6 @@ public class InventoryRepository : IInventoryRepository
     
     public async Task<bool> ImportInventory(SqlConnection connection, SqlTransaction? transaction)
     {
-        Console.WriteLine("Successfully downloaded inventory.");
         var inventory = GetInventoryFromCsv();
 
         await using var cmd = connection.CreateCommand();
@@ -49,7 +48,7 @@ public class InventoryRepository : IInventoryRepository
     
     private static IEnumerable<Inventory> GetInventoryFromCsv()
     {
-        var readerInventory = new StreamReader("Inventory.csv", Encoding.UTF8);
+        var readerInventory = new StreamReader(DownloadFilesPaths.InventorySavingPath, Encoding.UTF8);
         var csvInventory = new CsvHelper.CsvReader(readerInventory, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,

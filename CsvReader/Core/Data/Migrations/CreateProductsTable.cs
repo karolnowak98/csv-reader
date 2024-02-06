@@ -2,7 +2,7 @@ using FluentMigrator;
 
 namespace CsvReader.Core.Data.Migrations;
 
-[Migration(20240205096691)]
+[Migration(20240205185191)]
 public class CreateProductsTable : Migration
 {
     public override void Up()
@@ -14,7 +14,6 @@ public class CreateProductsTable : Migration
             .WithColumn("EAN").AsString(13)
             .WithColumn("ProducerName").AsString(255)
             .WithColumn("Category").AsString(1023)
-            .WithColumn("IsWire").AsBoolean()
             .WithColumn("Available").AsBoolean()
             .WithColumn("IsVendor").AsBoolean()
             .WithColumn("DefaultImage").AsString(1023).WithDefaultValue("");

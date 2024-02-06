@@ -2,7 +2,7 @@ using FluentMigrator;
 
 namespace CsvReader.Core.Data.Migrations;
 
-[Migration(20240205096692)]
+[Migration(20240205185192)]
 public class CreatePricesTable : Migration
 {
     public override void Up()

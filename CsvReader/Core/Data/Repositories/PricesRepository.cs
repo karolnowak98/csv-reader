@@ -14,7 +14,6 @@ public class PricesRepository : IPricesRepository
 {
     public async Task<bool> ImportPrices(SqlConnection connection, SqlTransaction? transaction)
     {
-        Console.WriteLine("Successfully downloaded prices.");
         var prices = GetPricesFromCsv();
 
         await using var cmd = connection.CreateCommand();
@@ -58,7 +57,7 @@ public class PricesRepository : IPricesRepository
     
     private static IEnumerable<Price> GetPricesFromCsv()
     {
-        var readerPrices = new StreamReader("Prices.csv", Encoding.UTF8);
+        var readerPrices = new StreamReader(DownloadFilesPaths.PricesSavingPath, Encoding.UTF8);
         var csvPrices = new CsvHelper.CsvReader(readerPrices, new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = false

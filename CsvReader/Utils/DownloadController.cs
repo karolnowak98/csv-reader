@@ -10,5 +10,6 @@ public static class DownloadController
         await using var stream = await response.Content.ReadAsStreamAsync();
         await using var fileStream = new FileStream(fileName, FileMode.Create);
         await stream.CopyToAsync(fileStream);
+        Console.WriteLine($"Successfully downloaded {fileName}.");
     }
 }
