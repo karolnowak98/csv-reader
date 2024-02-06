@@ -1,0 +1,43 @@
+CsvReader/*.swp
+CsvReader/*.*~
+CsvReader/project.lock.json
+CsvReader/.DS_Store
+CsvReader/*.pyc
+CsvReader/nupkg/
+
+# Visual Studio Code
+CsvReader/.vscode/
+
+# Rider
+CsvReader/.idea/
+
+# Visual Studio
+CsvReader/.vs/
+
+# Fleet
+CsvReader/.fleet/
+
+# Code Rush
+CsvReader/.cr/
+
+# User-specific files
+CsvReader/*.suo
+CsvReader/*.user
+CsvReader/*.userosscache
+CsvReader/*.sln.docstates
+
+# Build results
+CsvReader/[Dd]ebug/
+CsvReader/[Dd]ebugPublic/
+CsvReader/[Rr]elease/
+CsvReader/[Rr]eleases/
+CsvReader/x64/
+CsvReader/x86/
+CsvReader/build/
+CsvReader/bld/
+CsvReader/[Bb]in/
+CsvReader/[Oo]bj/
+CsvReader/[Oo]ut/
+CsvReader/msbuild.log
+CsvReader/msbuild.err
+CsvReader/msbuild.wrn
