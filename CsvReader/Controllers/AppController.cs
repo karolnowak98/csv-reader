@@ -1,11 +1,10 @@
-using System.Data;
-using CsvReader.Core.Data;
-using CsvReader.Interfaces;
-using CsvReader.Utils;
+using GlassyCode.CsvReader.Core.Data;
+using GlassyCode.CsvReader.Interfaces;
+using GlassyCode.CsvReader.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
-namespace CsvReader.Controllers;
+namespace GlassyCode.CsvReader.Controllers;
 
 [Route("[controller]")]
 [ApiController]
@@ -61,6 +60,7 @@ public class AppController : ControllerBase
                     var deleteNotValidPrices = _pricesRepo.DeleteNotValidPrices(_connection, transaction);
                     
                     await Task.WhenAll(deleteNotValidProducts, deleteNotValidPrices);
+                    Console.WriteLine("Successfully imported data.");
                     return Results.Ok("Successfully imported data.");
                 }
                 else

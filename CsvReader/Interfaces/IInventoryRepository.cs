@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-namespace CsvReader.Interfaces;
+namespace GlassyCode.CsvReader.Interfaces;
 
 public interface IInventoryRepository
 {

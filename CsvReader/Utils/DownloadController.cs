@@ -1,4 +1,4 @@
-namespace CsvReader.Utils;
+namespace GlassyCode.CsvReader.Utils;
 
 public static class DownloadController
 {

@@ -1,4 +1,4 @@
-namespace CsvReader.Core.Data.Queries;
+namespace GlassyCode.CsvReader.Core.Data.Queries;
 
 public static class PricesQueries
 {

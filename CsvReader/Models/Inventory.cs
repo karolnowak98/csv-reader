@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace CsvReader.Models;
+namespace GlassyCode.CsvReader.Models;
 
 public class Inventory
 {

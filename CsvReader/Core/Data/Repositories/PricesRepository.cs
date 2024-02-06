@@ -1,14 +1,14 @@
 using System.Globalization;
 using System.Text;
 using CsvHelper.Configuration;
-using CsvReader.Core.Data.Queries;
-using CsvReader.Interfaces;
-using CsvReader.Models;
-using CsvReader.Utils;
 using Dapper;
+using GlassyCode.CsvReader.Core.Data.Queries;
+using GlassyCode.CsvReader.Interfaces;
+using GlassyCode.CsvReader.Models;
+using GlassyCode.CsvReader.Utils;
 using Microsoft.Data.SqlClient;
 
-namespace CsvReader.Core.Data.Repositories;
+namespace GlassyCode.CsvReader.Core.Data.Repositories;
 
 public class PricesRepository : IPricesRepository
 {

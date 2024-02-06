@@ -1,6 +1,6 @@
 using FluentMigrator;
 
-namespace CsvReader.Core.Data.Migrations;
+namespace GlassyCode.CsvReader.Core.Data.Migrations;
 
 [Migration(20240205185191)]
 public class CreateProductsTable : Migration

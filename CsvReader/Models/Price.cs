@@ -1,7 +1,7 @@
 using CsvHelper.Configuration.Attributes;
-using CsvReader.Utils;
+using GlassyCode.CsvReader.Utils;
 
-namespace CsvReader.Models;
+namespace GlassyCode.CsvReader.Models;
 
 public class Price
 {

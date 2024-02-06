@@ -1,7 +1,7 @@
-using CsvReader.Models.DTOs;
+using GlassyCode.CsvReader.Models.DTOs;
 using Microsoft.Data.SqlClient;
 
-namespace CsvReader.Interfaces;
+namespace GlassyCode.CsvReader.Interfaces;
 
 public interface IProductsRepository
 {

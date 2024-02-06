@@ -1,4 +1,4 @@
-namespace CsvReader.Core.Data;
+namespace GlassyCode.CsvReader.Core.Data;
 
 public static class DownloadFilesPaths
 {

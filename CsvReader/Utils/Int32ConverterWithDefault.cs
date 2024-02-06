@@ -2,7 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace CsvReader.Utils;
+namespace GlassyCode.CsvReader.Utils;
 
 public class Int32ConverterWithDefault : Int32Converter
 {

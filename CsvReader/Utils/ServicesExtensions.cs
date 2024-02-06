@@ -1,8 +1,8 @@
-using CsvReader.Core.Data.Repositories;
-using CsvReader.Interfaces;
+using GlassyCode.CsvReader.Core.Data.Repositories;
+using GlassyCode.CsvReader.Interfaces;
 using Microsoft.Data.SqlClient;
 
-namespace CsvReader.Utils;
+namespace GlassyCode.CsvReader.Utils;
 
 public static class ServicesExtensions
 {
