@@ -32,4 +32,11 @@ public static class ProductsQueries
                                            LEFT JOIN Prices Pr ON P.SKU = Pr.SKU
                                            WHERE P.SKU = @SKU
                                         """;
+    
+    public const string DeleteNotValidProducts = """
+                                         DELETE P
+                                         FROM Products P
+                                         LEFT JOIN Inventory I ON P.ID = I.ProductID
+                                         WHERE I.ProductID IS NULL;
+                                         """;
 }

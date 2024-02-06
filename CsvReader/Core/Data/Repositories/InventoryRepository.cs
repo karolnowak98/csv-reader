@@ -13,18 +13,38 @@ public class InventoryRepository : IInventoryRepository
 {
     private const string ShippingCondition = "Wysyłka w 24h";
     
-    public async Task ImportInventory(SqlConnection connection)
+    public async Task<bool> ImportInventory(SqlConnection connection, SqlTransaction? transaction)
     {
         Console.WriteLine("Successfully downloaded inventory.");
-
         var inventory = GetInventoryFromCsv();
 
-        await connection.ExecuteAsync(InventoryQueries.CreateTempTable);
-        await connection.ExecuteAsync(InventoryQueries.InsertTempInventory, inventory);
-        await connection.ExecuteAsync(InventoryQueries.InsertInventoryFromTemp);
-        await connection.ExecuteAsync(InventoryQueries.DropTempTable);
+        await using var cmd = connection.CreateCommand();
+        if (transaction != null)
+        {
+            cmd.Transaction = transaction;
+        }
+        else
+        {
+            transaction = connection.BeginTransaction();
+            cmd.Transaction = transaction;
+        }
 
-        Console.WriteLine("Successfully imported inventories.");
+        try
+        {
+            await connection.ExecuteAsync(InventoryQueries.CreateTempTable, transaction: transaction);
+            await connection.ExecuteAsync(InventoryQueries.InsertTempInventory, inventory, transaction: transaction);
+            await connection.ExecuteAsync(InventoryQueries.InsertInventoryFromTemp, transaction: transaction);
+            await connection.ExecuteAsync(InventoryQueries.DropTempTable, transaction: transaction);
+            
+            Console.WriteLine("Successfully imported inventories.");
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction?.Rollback();
+
+            return false;
+        }
     }
     
     private static IEnumerable<Inventory> GetInventoryFromCsv()

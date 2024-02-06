@@ -12,21 +12,56 @@ namespace CsvReader.Core.Data.Repositories;
 
 public class ProductsRepository : IProductsRepository
 {
-    public async Task ImportProducts(SqlConnection connection)
+    public async Task<bool> ImportProducts(SqlConnection connection, SqlTransaction? transaction)
     {
         Console.WriteLine("Successfully downloaded products.");
         var products = GetProductsFromCsv();
 
-        await connection.ExecuteAsync(ProductsQueries.CreateTempProducts);
-        await connection.ExecuteAsync(ProductsQueries.InsertTempProducts, products);
-        await connection.ExecuteAsync(ProductsQueries.InsertProductsFromTempTable);
-        await connection.ExecuteAsync(ProductsQueries.DropTempTable);
-        Console.WriteLine("Successfully imported products.");
+        await using var cmd = connection.CreateCommand();
+        
+        if (transaction != null)
+        {
+            cmd.Transaction = transaction;
+        }
+        else
+        {
+            transaction = connection.BeginTransaction();
+            cmd.Transaction = transaction;
+        }
+
+        try
+        {
+            await connection.ExecuteAsync(ProductsQueries.CreateTempProducts, transaction: transaction);
+            await connection.ExecuteAsync(ProductsQueries.InsertTempProducts, products, transaction: transaction);
+            await connection.ExecuteAsync(ProductsQueries.InsertProductsFromTempTable, transaction: transaction);
+            await connection.ExecuteAsync(ProductsQueries.DropTempTable, transaction: transaction);
+            Console.WriteLine("Successfully imported products.");
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction?.Rollback();
+            return false;
+        }
     }
 
     public async Task<ProductInfo?> GetProductInfo(SqlConnection connection, string sku)
     {
         return await connection.QueryFirstOrDefaultAsync<ProductInfo>(ProductsQueries.GetProductInfo, new { SKU = sku });
+    }
+
+    public async Task<bool> DeleteNotValidProducts(SqlConnection connection, SqlTransaction transaction)
+    {
+        try
+        {
+            await connection.ExecuteAsync(ProductsQueries.DeleteNotValidProducts, transaction);
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction?.Rollback();
+            return false;
+        }
     }
 
     private static IEnumerable<Product> GetProductsFromCsv()

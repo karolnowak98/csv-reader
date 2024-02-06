@@ -12,15 +12,48 @@ namespace CsvReader.Core.Data.Repositories;
 
 public class PricesRepository : IPricesRepository
 {
-    public async Task ImportPrices(SqlConnection connection)
+    public async Task<bool> ImportPrices(SqlConnection connection, SqlTransaction? transaction)
     {
         Console.WriteLine("Successfully downloaded prices.");
-
         var prices = GetPricesFromCsv();
 
-        await connection.ExecuteAsync(PricesQueries.InsertPrices, prices);
+        await using var cmd = connection.CreateCommand();
+        if (transaction != null)
+        {
+            cmd.Transaction = transaction;
+        }
+        else
+        {
+            transaction = connection.BeginTransaction();
+            cmd.Transaction = transaction;
+        }
 
-        Console.WriteLine("Successfully imported prices.");
+        try
+        {
+            await connection.ExecuteAsync(PricesQueries.InsertPrices, prices, transaction: transaction);
+            Console.WriteLine("Successfully imported prices.");
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction?.Rollback();
+            return false;
+        }
+    }
+
+
+    public async Task<bool> DeleteNotValidPrices(SqlConnection connection, SqlTransaction? transaction)
+    {
+        try
+        {
+            await connection.ExecuteAsync(PricesQueries.DeleteNotValidPrices);
+            return true;
+        }
+        catch (Exception e)
+        {
+            transaction?.Rollback();
+            return false;
+        }
     }
     
     private static IEnumerable<Price> GetPricesFromCsv()

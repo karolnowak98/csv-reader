@@ -5,6 +5,7 @@ namespace CsvReader.Interfaces;
 
 public interface IProductsRepository
 {
-    Task ImportProducts(SqlConnection connection);
+    Task<bool> ImportProducts(SqlConnection connection, SqlTransaction? transaction);
+    Task<bool> DeleteNotValidProducts(SqlConnection connection, SqlTransaction? transaction);
     Task<ProductInfo?> GetProductInfo(SqlConnection connection, string sku);
 }

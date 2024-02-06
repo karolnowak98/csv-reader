@@ -4,5 +4,6 @@ namespace CsvReader.Interfaces;
 
 public interface IPricesRepository
 {
-    Task ImportPrices(SqlConnection connection);
+    Task<bool> ImportPrices(SqlConnection connection, SqlTransaction? transaction);
+    Task<bool> DeleteNotValidPrices(SqlConnection connection, SqlTransaction? transaction);
 }

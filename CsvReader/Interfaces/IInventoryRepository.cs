@@ -4,5 +4,5 @@ namespace CsvReader.Interfaces;
 
 public interface IInventoryRepository
 {
-    Task ImportInventory(SqlConnection connection);
+    Task<bool> ImportInventory(SqlConnection connection, SqlTransaction transaction);
 }

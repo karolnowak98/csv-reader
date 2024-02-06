@@ -1,5 +1,7 @@
+using System.Data;
+using CsvReader.Core.Data;
 using CsvReader.Interfaces;
-using Dapper;
+using CsvReader.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -14,7 +16,8 @@ public class AppController : ControllerBase
     private readonly IPricesRepository _pricesRepo;
     private readonly IInventoryRepository _inventoryRepo;
     
-    public AppController(SqlConnection connection, IProductsRepository productsRepo, IPricesRepository pricesRepo, IInventoryRepository inventoryRepo)
+    public AppController(SqlConnection connection, IProductsRepository productsRepo, 
+        IPricesRepository pricesRepo, IInventoryRepository inventoryRepo)
     {
         _connection = connection;
         _productsRepo = productsRepo;
@@ -23,6 +26,8 @@ public class AppController : ControllerBase
     }
     
     [HttpPost("import-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IResult> ImportData()
     {
         try
@@ -37,37 +42,50 @@ public class AppController : ControllerBase
             // await Task.WhenAll(downloadProductsTask, downloadInventoryTask, downloadPrices);
 
             await _connection.OpenAsync();
-        
-            await _productsRepo.ImportProducts(_connection);
-            await _pricesRepo.ImportPrices(_connection);
-            await _inventoryRepo.ImportInventory(_connection);
-            
-            const string deleteProducts = @"
-        DELETE P
-        FROM Products P 
-        LEFT JOIN Inventory I ON P.ID = I.ProductID
-        WHERE I.ProductID IS NULL;
-    ";
 
-            const string deletePrices = @"
-        DELETE Pr
-        FROM Prices Pr LEFT JOIN Products P ON Pr.SKU = P.SKU
-        WHERE P.SKU IS NULL;
-    ";
+            await using var transaction = _connection.BeginTransaction();
+            try
+            {
+                var productsImported = _productsRepo.ImportProducts(_connection, transaction);
+                var pricesImported = _pricesRepo.ImportPrices(_connection, transaction);
 
-            await _connection.ExecuteAsync(deleteProducts);
-            await _connection.ExecuteAsync(deletePrices);
-            await _connection.CloseAsync();
+                await Task.WhenAll(productsImported, pricesImported);
+                
+                var inventoryImported = await _inventoryRepo.ImportInventory(_connection, transaction);
 
-            return Results.Ok("Successfully imported data.");
+                if (productsImported.Result && pricesImported.Result && inventoryImported)
+                {
+                    transaction.Commit();
+                    await _productsRepo.DeleteNotValidProducts(_connection, transaction);
+                    await _pricesRepo.DeleteNotValidPrices(_connection, transaction);
+
+                    return Results.Ok("Successfully imported data.");
+                }
+                else
+                {
+                    transaction.Rollback();
+                    return Results.BadRequest($"Error during data import.");
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return Results.BadRequest($"Error during data import: {ex.Message}");
+            }
         }
         catch (Exception ex)
         {
             return Results.BadRequest($"Error during data import: {ex.Message}");
         }
+        finally
+        {
+            _connection.Close();
+        }
     }
 
     [HttpGet("/product-info/{sku}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IResult> GetProductInfo(string sku)
     {
         var result = await _productsRepo.GetProductInfo(_connection, sku);
